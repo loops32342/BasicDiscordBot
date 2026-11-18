@@ -1,5 +1,6 @@
 import discord
 import time
+from discord.ext import commands
 from bot_logic import gen_pass
 from bot_logic import flip_coin
 # La variable intents almacena los privilegios del bot
@@ -7,27 +8,29 @@ intents = discord.Intents.default()
 # Activar el privilegio de lectura de mensajes
 intents.message_content = True
 # Crear un bot en la variable cliente y transferirle los privilegios
-client = discord.Client(intents=intents)
+bot = commands.Bot(command_prefix="/",intents=intents)
 
-@client.event
+@bot.event
 async def on_ready():
-    print(f'Hemos iniciado sesión como {client.user}')
+    print(f'Hemos iniciado sesión como {bot.user}')
 
-@client.event
-async def on_message(message):
-    if message.author == client.user:
+@bot.command()
+async def hello(ctx):
+    await ctx.send("Este es un bot estupido")
+@bot.command()
+async def bye(ctx):
+   await ctx.send("😊")
+@bot.command()
+async def genpass(ctx,caracteres:int):
+   await ctx.send (gen_pass(caracteres))
+@bot.command()
+async def add(ctx, left: int, right: int):
+    """Adds two numbers together."""
+    try:
+        await ctx.send(left + right)
+    except Exception:
+        await ctx.send("Dos numeros son requeridos para esta operacion")
         return
-    if message.content.startswith('$hello'):
-        await message.channel.send("Hi!")
-    elif message.content.startswith('$bye'):
-        await message.channel.send("👌")
-    elif message.content.startswith('$password'):
-        await message.channel.send(gen_pass(15))
-    elif message.content.startswith("$Coin Flip"):
-        await message.channel.send(flip_coin())
-    else:
-        await message.channel.send(message.content)
-        time.sleep(0.5)
-        await message.channel.send("Lol! No puedo hacer eso bobo.Este mensaje esta hecho para personas que piensan en que en este bot hay comandos infinitos y no es asi.")
 
-client.run("Aqui Va el token")
+
+bot.run("Tu_Token_Va_Aqui")
